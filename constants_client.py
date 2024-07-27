@@ -1,0 +1,4 @@
+FPS = 60
+SCREEN_RESOLUTION = (1200, 600)
+ASSETS_PATH = 'assets'
+CONNECT_URL = "http://127.0.0.1:80"

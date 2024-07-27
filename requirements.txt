@@ -2,4 +2,3 @@ pygame
 
 python-socketio
 python-socketio[client]
-flask

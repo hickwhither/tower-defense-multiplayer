@@ -82,7 +82,6 @@ class Engine:
         self.enemy_downed = pg.sprite.Group()
 
     def on_mousedown(self, sid, pos):
-        print("SHOOT!")
         self.shoot_test(pos)
 
     def start(self):

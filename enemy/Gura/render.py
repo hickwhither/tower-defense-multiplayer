@@ -12,7 +12,7 @@ def render(properties: dict, screen: pg.Surface) -> None:
     else: render_dead(properties, screen)
 
 def render_alive(properties: dict, screen: pg.Surface) -> None:
-    if properties['delta']['spawn']%600 < 300: surf = gura_1
+    if properties['delta']['spawn']%18 < 9: surf = gura_1
     else: surf=gura_sit
 
     surf = pg.transform.flip(surf, properties['movement'][0]<0, False)

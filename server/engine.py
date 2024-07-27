@@ -31,8 +31,9 @@ class AnySprite(pg.sprite.Sprite):
         return delta_time
 
 from . import enemy
+from . import projectile
 class Engine:
-    enemy_index: dict[enemy.Enemy]
+    index: dict[dict[enemy.Enemy | projectile.Bullet]]
 
     lives: int
 
@@ -50,20 +51,21 @@ class Engine:
             'sprites': [],
             'map': c.MAP
         }
-
-        self.enemy_index = {}
-        for enemy in os.listdir('enemy'):
-            if os.path.isfile(os.path.join('enemy', enemy)): continue
-            spec = importlib.util.find_spec(f"enemy.{enemy}.behavior")
-            lib = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(lib)
-            
-            behavior = getattr(lib, enemy)
-            if behavior:
-                self.enemy_index[enemy] = behavior
-                print(f"Enemy {enemy} loaded!")
-            else:
-                print(f"Enemy {enemy} failed: behavior not found")
+        self.index = {}
+        for type in ['enemy', 'projectile']:
+            self.index[type] = {}
+            for i in os.listdir(type):
+                if os.path.isfile(os.path.join(type, i)): continue
+                spec = importlib.util.find_spec(f"{type}.{i}.behavior")
+                lib = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(lib)
+                
+                behavior = getattr(lib, i)
+                if behavior:
+                    self.index[type][i] = behavior
+                    print(f"{type} `{i}` loaded!")
+                else:
+                    print(f"{type} `{i}` failed: behavior not found")
 
             
         self.lives = 69
@@ -92,7 +94,7 @@ class Engine:
 
             self.testcube -= 1
             if self.testcube == 0:
-                e = self.enemy_index[random.choice(['TriBede', 'Gura'])](self, self._random_waypoints())
+                e = self.index['enemy'][random.choice(['TriBede', 'Gura'])](self, self._random_waypoints())
                 self.enemy_group.add(e)
                 self.testcube = 30
             

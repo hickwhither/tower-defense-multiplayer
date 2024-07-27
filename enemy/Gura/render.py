@@ -21,7 +21,7 @@ def render_alive(properties: dict, screen: pg.Surface) -> None:
 
 def render_dead(properties: dict, screen: pg.Surface) -> None:
     delta = properties['delta']['death']
-    if delta < 500: surf = gura_death1
+    if delta < 15: surf = gura_death1
     else: surf = gura_death2
 
     surf = pg.transform.flip(surf, properties['movement'][0]<0, False)

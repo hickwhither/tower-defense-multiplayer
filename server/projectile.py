@@ -2,9 +2,10 @@ import random
 from typing import Any, Sequence
 
 import pygame as pg
+from server.engine import AnySprite
 
 
-class Bullet(pg.sprite.Sprite):
+class Bullet(AnySprite):
     type = 'projectile'
     name: str
     image: str
@@ -28,20 +29,17 @@ class Bullet(pg.sprite.Sprite):
     def on_tick(self):
         self.move()
         
-        for i in self.game.enemy_group:
+        for i in self.engine.enemy_group:
             if pg.sprite.collide_rect(self, i):
                 self.on_collide_enemy(i)
         
         if self.penetration <= 0:
             self.kill()
             del self
-            # self.death_time = pg.time.get_ticks()
-            # self.death_reason = 'killed'
-            # self.game.enemy_lost.add(self)
 
-    def __init__(self, game, pos, movement):
-        super().__init__()
-        self.game = game
+    def __init__(self, engine, pos, movement):
+        super().__init__(engine)
+        self.engine = engine
         
         self.pos = pg.Vector2(pos)
         self.movement = pg.Vector2(movement).normalize()
@@ -77,8 +75,10 @@ class Bullet(pg.sprite.Sprite):
         """
         
         return {
-            'image': self.image,
-            'rect': {'midbottom': self.pos},
-            'rotate': self.movement.angle_to((0, -1))
+            'type': self.type,
+            'name': self.name,
+            'pos': tuple(self.pos),
+            'movement': tuple(self.movement),
+            'delta': self.get_all_delta()
         }
 

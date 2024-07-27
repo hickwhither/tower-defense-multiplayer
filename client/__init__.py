@@ -9,7 +9,8 @@ import os, sys
 
 class Client:
     run: bool
-        
+    
+    render: dict[dict]
 
     def __init__(self):
         pg.init()
@@ -18,23 +19,17 @@ class Client:
         self.clock = pg.time.Clock()
         self.sio = ClientSocketio()
         
-        self.enemy_render = {}
-        for enemy in os.listdir('enemy'):
-            if os.path.isfile(os.path.join('enemy',enemy)): continue
-            spec = importlib.util.find_spec(f"enemy.{enemy}.render")
-            lib = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(lib)
+        self.render = {}
 
-            self.enemy_render[enemy] = lib
-        
-        self.map_render = {}
-        for map in os.listdir('map'):
-            if os.path.isfile(os.path.join('map', map)): continue
-            spec = importlib.util.find_spec(f"map.{map}.render")
-            lib = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(lib)
+        for type in ['enemy', 'map', 'projectile']:
+            self.render[type] = {}
+            for i in os.listdir(type):
+                if os.path.isfile(os.path.join(type,i)): continue
+                spec = importlib.util.find_spec(f"{type}.{i}.render")
+                lib = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(lib)
 
-            self.map_render[map] = lib
+                self.render[type][i] = lib
 
 
     def start(self):
@@ -54,12 +49,11 @@ class Client:
             sprites = draw_properties['sprites']
             map = draw_properties['map']
 
-            self.screen.blit(self.map_render[map].image, (0, 0))
+            self.screen.blit(self.render['map'][map].image, (0, 0))
 
             for i in sprites:
-                if i['type'] != 'enemy': continue
-                self.enemy_render[i['name']].render(i, self.screen)
-
+                self.render[i['type']][i['name']].render(i, self.screen)
+                
 
             pg.display.update()
             self.clock.tick(c.FPS)
